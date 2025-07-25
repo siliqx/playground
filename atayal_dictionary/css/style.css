@@ -1,0 +1,243 @@
+/*==================================================
+  Dark Tech Theme Variables
+====================================================*/
+:root {
+  --color-bg:       #0d0f12;     /* 深夜黑 */
+  --color-surface:  #1a1d22;     /* 深灰次背景 */
+  --color-border:   #2b2f36;     /* 鈍光金屬邊框 */
+  
+  --color-primary:   #00ffea;    /* 螢光青綠 */
+  --color-secondary: #ff0099;    /* 螢光玫瑰 */
+  
+  --color-on-surface: #c5c7c9;   /* 淺灰文字 */
+  --color-on-primary: #0d0f12;   /* 主色文字黑 */
+  
+  --font-sans: 'Noto Sans TC', sans-serif;
+  --font-tech: 'Orbitron', sans-serif; /* 科技感字體 */
+}
+
+/*==================================================
+  Reset & Base
+====================================================*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+/*==================================================
+  Container
+====================================================*/
+.container {
+  width: min(90%, 900px);
+  margin: 0 auto;
+  padding: 1.5rem 0;
+}
+
+/*==================================================
+  Header
+====================================================*/
+.site-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 0;
+}
+.site-title {
+  margin: 0;
+  font-family: var(--font-tech);
+  font-size: 2rem;
+  color: var(--color-primary);
+  text-shadow: 0 0 8px var(--color-primary);
+}
+.site-nav a {
+  color: var(--color-on-surface);
+  margin-right: 1rem;
+  font-weight: 500;
+  position: relative;
+}
+.site-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-secondary);
+  transition: width 0.3s;
+}
+.site-nav a:hover::after {
+  width: 100%;
+}
+
+/*==================================================
+  Search Section
+====================================================*/
+.search-section {
+  margin: 2rem 0;
+  text-align: center;
+}
+.search-input {
+  width: 100%;
+  max-width: 450px;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  font-family: var(--font-tech);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 50px;
+  outline: none;
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+.search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 12px var(--color-primary);
+}
+
+/*==================================================
+  Results List
+====================================================*/
+.results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.results-list li {
+  background: var(--color-surface);
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: var(--font-tech);
+  position: relative;
+}
+.results-list li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,255,234,0.25);
+}
+.results-list li::after {
+  content: '→';
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--color-secondary);
+}
+
+/*==================================================
+  Modal Overlay & Content
+====================================================*/
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,15,18,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.modal-overlay.show {
+  visibility: visible;
+  opacity: 1;
+}
+.modal-content {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 0 16px rgba(0,255,234,0.2);
+  font-family: var(--font-sans);
+}
+.modal-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.modal-close:hover {
+  color: var(--color-primary);
+}
+
+/*==================================================
+  Details Grid
+====================================================*/
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+}
+.details-grid dt {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.details-grid dd {
+  margin: 0;
+  color: var(--color-on-surface);
+}
+
+/*==================================================
+  Conjugation Section
+====================================================*/
+.conjugation-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+.conjugation-section h3 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-tech);
+  color: var(--color-secondary);
+  text-shadow: 0 0 6px var(--color-secondary);
+}
+.conjugation-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.conjugation-table th,
+.conjugation-table td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem;
+  text-align: left;
+  font-family: var(--font-tech);
+}
+.conjugation-table tbody tr:nth-child(odd) {
+  background: #1f2227;
+}
+
+/*==================================================
+  Responsive
+====================================================*/
+@media (max-width: 480px) {
+  .results-list {
+    grid-template-columns: 1fr;
+  }
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}

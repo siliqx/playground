@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atayal 線上詞典</title>
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Poppins:wght@300;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">Atayal 線上詞典</h1>
+      <nav class="site-nav">
+        <a href="index.html">首頁</a>
+        <a href="about.html">關於</a>
+        <a href="https://github.com/siliqx/playground">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="search-section">
+      <input id="searchBox" class="search-input" type="search" placeholder="輸入中文或泰雅語詞形…" autofocus />
+    </section>
+
+    <section class="results-section">
+      <ul id="resultList" class="results-list"></ul>
+    </section>
+  </main>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content">
+      <button id="closeBtn" class="modal-close" aria-label="關閉">&times;</button>
+      <dl class="details-grid">
+        <div>
+          <dt>詞形 (Atayal)</dt>
+          <dd id="termAtayal"></dd>
+        </div>
+        <div>
+          <dt>中文翻譯 (ZH-TW)</dt>
+          <dd id="termZh"></dd>
+        </div>
+        <div>
+          <dt>詞性 (POS)</dt>
+          <dd id="termPos"></dd>
+        </div>
+        <div>
+          <dt>定義 (definition)</dt>
+          <dd id="termDef"></dd>
+        </div>
+        <div>
+          <dt>例句 (example)</dt>
+          <dd id="termExample"></dd>
+        </div>
+
+        <div>
+          <dt>語音</dt>
+          <dd><audio id="termAudio" controls></audio></dd>
+        </div>
+      </dl>
+
+      <!-- 在 <dl class="details-grid"> 之後，緊接著加： -->
+      <div id="conjugationSection" class="conjugation-section hidden">
+        <h3>動詞變化表</h3>
+        <table id="conjugationTable" class="conjugation-table">
+          <thead>
+            <tr>
+              <th>形式</th>
+              <th>範例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- JS 動態填入 -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+
+</html>
