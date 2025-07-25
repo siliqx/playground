@@ -1,3 +1,3 @@
 # Siliqx Labs - playground
 
-Just click https://playground.siliqx.com for now!
+Just click https://siliqx.com/playground for now!
