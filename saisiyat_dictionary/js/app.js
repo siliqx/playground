@@ -1,16 +1,13 @@
 // js/app.js
 
 // 你的試算表 ID 與 API Key
-const SPREADSHEET_ID = '1cZGiiy6YEs9kmSLQ8u_jaode3dWWAs9AdQHZon_leSs';
+const SPREADSHEET_ID = '12U0LDIR_tndSjIyfZhlG9uIfB88yRqlaX--W7JHeOZ0';
 const API_KEY        = 'AIzaSyBDO7EzRyaO3wbfzljo7vVlEDwabwSY9w0';
-// 注意：如果你的分頁名稱是「詞彙」，且含中文，Range 要加單引號包起來
 const RANGE          = "'詞彙'!A:E";
 
 let entries = [];
 
-/**
- * 讀取 Google Sheets 資料，轉成物件陣列
- */
+/** 讀取 Google Sheets 資料，轉成物件陣列 */
 async function loadEntries() {
   const url =
     `https://sheets.googleapis.com/v4/spreadsheets/` +
@@ -27,79 +24,70 @@ async function loadEntries() {
   );
 }
 
-/**
- * 動詞變化規則
- */
+/** 動詞變化規則 */
 const verbRules = {
   'VRB': {
     '主事焦點': root => root,
     '受事焦點': root => `${root}-en`,
-    '處所焦點': root => `${root}-an`,
+    '處所焦點': root => `${root}-un`,
     '工具／受惠焦點': root => `Si-${root}`,
-    '祈使式主焦': root => `${root}`,
+    '祈使式主焦': root => root,
     '祈使式受焦': root => `${root}-i`,
     '祈使式處焦': root => `${root}-i`,
     '祈使式周焦': root => `${root}-ani`,
-    '未來式': root => `'am${root}`,
-    '進行式': root => `'CVC-${root}`,
+    '未來式': root => `'am ${root}`,
+    '進行式': root => ` CVC-${root}`,
     '過去式': root => `${root} ila`,
-    '否定一般式': root => `'okik ${root}`,
-    '否定祈使式': root => `okay ${root}`,
+    '否定一般式': root => `okay ${root}`,
+    '否定祈使式': root => `okik ${root}`,
   },
   // 如需更多類別，可在這裡繼續擴充
 };
 
-/**
- * 根據詞根 root 與 POS 類別，產生一份變化表（array of [形式, 詞形]）
- */
+/** 根據詞根 root 與 POS 類別，產生一份變化表 */
 function generateConjugation(root, pos) {
-  let ruleSet = null;
-  for (const key of Object.keys(verbRules)) {
-    if (pos.startsWith(key)) {
-      ruleSet = verbRules[key];
-      break;
-    }
+  // 找到對應的 rule set (支援 VRB 或以「動詞」開頭的 POS)
+  let ruleSet = verbRules[pos] || verbRules['VRB'];
+  if (!pos.includes('動詞') && !verbRules[pos]) {
+    return [];
   }
-  if (!ruleSet) return [];
   return Object.entries(ruleSet).map(([label, fn]) => [label, fn(root)]);
 }
 
-/**
- * 搜尋函式：同時比對 ZH-TW 與 Atayal 兩欄
- */
+/** 搜尋函式 */
 function searchEntries(q) {
   const kw = q.trim().toLowerCase();
   if (!kw) return entries;
   return entries.filter(e =>
-    e['ZH-TW'].toLowerCase().includes(kw) ||
-    e['Atayal'].toLowerCase().includes(kw)
+    (e['ZH-TW']  || '').toLowerCase().includes(kw) ||
+    (e['Saisiyat']|| '').toLowerCase().includes(kw) ||
+    (e['ENG']    || '').toLowerCase().includes(kw) ||
+    (e['POS']    || '').toLowerCase().includes(kw)
   );
 }
 
-/**
- * 渲染候選列表
- */
+/** 渲染候選列表 */
 function renderList(list) {
   const ul = document.getElementById('resultList');
   ul.innerHTML = '';
   list.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = `${item['Atayal']} — ${item['ZH-TW']}`;
+    li.textContent = `${item['Saisiyat']} — ${item['ZH-TW']}`;
     li.onclick = () => showDetail(item);
     ul.appendChild(li);
   });
 }
 
-/**
- * 顯示完整詞條細節，並處理動詞變化表的顯示
- */
+/** 顯示完整詞條細節，並處理動詞變化表 */
 function showDetail(item) {
-  // 基本欄位
-  document.getElementById('termAtayal').textContent  = item['Atayal'];
+  // 基本欄位填值
+  document.getElementById('termAtayal').textContent  = item['Saisiyat'];
   document.getElementById('termZh').textContent      = item['ZH-TW'];
+  document.getElementById('termENG').textContent     = item['ENG'];
   document.getElementById('termPos').textContent     = item['POS'] || '';
   document.getElementById('termDef').textContent     = item['definition'] || '';
   document.getElementById('termExample').textContent = item['example'] || '';
+
   const audioEl = document.getElementById('termAudio');
   if (item['audio_url']) {
     audioEl.src = item['audio_url'];
@@ -109,40 +97,37 @@ function showDetail(item) {
     audioEl.style.display = 'none';
   }
 
-  // 動詞變化表
+  // 動詞變化表邏輯
   const conjSec   = document.getElementById('conjugationSection');
-  const conjTbody = document.getElementById('conjugationTable').querySelector('tbody');
-  conjTbody.innerHTML = '';  // 清空舊內容
+  const conjTbody = document.querySelector('#conjugationTable tbody');
+  // 先清空並隱藏
+  conjTbody.innerHTML = '';
+  conjSec.classList.add('hidden');
 
-  if (item.POS && item.POS.startsWith('VRB')) {
-    // 顯示區塊
-    conjSec.classList.remove('hidden');
-    // 產生變化行
-    const rows = generateConjugation(item['Atayal'], item.POS);
-    rows.forEach(([form, example]) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${form}</td><td>${example}</td>`;
-      conjTbody.appendChild(tr);
-    });
-  } else {
-    // 隱藏區塊
-    conjSec.classList.add('hidden');
+  const posVal = (item['POS'] || '').trim();
+  // 判斷：只要 POS 含「動詞」或直接是 VRB，就認為可產生變化
+  if (posVal.includes('動詞') || posVal === 'VRB') {
+    const rows = generateConjugation(item['Saisiyat'], posVal);
+    if (rows.length) {
+      rows.forEach(([form, example]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${form}</td><td>${example}</td>`;
+        conjTbody.appendChild(tr);
+      });
+      conjSec.classList.remove('hidden');
+    }
   }
 
   // 顯示 Modal
   document.getElementById('detailModal').classList.add('show');
 }
 
-/**
- * 隱藏 Modal
- */
+/** 隱藏 Modal */
 document.getElementById('closeBtn').onclick = () => {
   document.getElementById('detailModal').classList.remove('show');
 };
 
-/**
- * 啟動並綁定事件
- */
+/** 啟動並綁定事件 */
 async function init() {
   try {
     await loadEntries();
